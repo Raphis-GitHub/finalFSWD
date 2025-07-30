@@ -1,26 +1,23 @@
 // Modern App.js with React Router and API integration
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, createElement } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext-new';
-import { CartProvider } from './contexts/CartContext-new';
+import { AuthProvider } from './contexts/AuthContext';
+import { CartProvider } from './contexts/CartContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import Navigation from './components/Navigation-simple';
-import HomePage from './pages/HomePage-simple';
-import { 
-    ProductsPage, 
-    ProductPage, 
-    CartPage, 
-    LoginPage, 
-    RegisterPage, 
-    AccountPage, 
-    AdminDashboard 
-} from './pages/placeholder-pages';
+import Navigation from './components/Navigation';
+import HomePage from './pages/HomePage';
+import ProductsPage from './pages/ProductsPage';
+import CartPage from './pages/CartPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import AccountPage from './pages/AccountPage';
+import AdminDashboard from './pages/AdminDashboard';
 import NotFoundPage from './pages/NotFoundPage';
 import socketService from './services/socketService';
 import apiService from './services/api';
 
 const App = () => {
-    const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -40,78 +37,73 @@ const App = () => {
         };
     }, []);
 
-    return React.createElement(Router, null,
-        React.createElement(AuthProvider, null,
-            React.createElement(CartProvider, null,
-                React.createElement('div', {
+    return createElement(Router, null,
+        createElement(AuthProvider, null,
+            createElement(CartProvider, null,
+                createElement('div', {
                     className: "min-h-screen bg-gray-50"
                 }, [
-                    React.createElement(Navigation, {
+                    createElement(Navigation, {
                         key: 'navigation',
                         isMobile
                     }),
                     
-                    React.createElement('main', {
+                    createElement('main', {
                         key: 'main',
                         className: "pt-16"
-                    }, React.createElement(Routes, null, [
+                    }, createElement(Routes, null, [
                         // Public routes
-                        React.createElement(Route, {
+                        createElement(Route, {
                             key: 'home',
                             path: '/',
-                            element: React.createElement(HomePage)
+                            element: createElement(HomePage)
                         }),
-                        React.createElement(Route, {
+                        createElement(Route, {
                             key: 'products',
                             path: '/products',
-                            element: React.createElement(ProductsPage)
+                            element: createElement(ProductsPage)
                         }),
-                        React.createElement(Route, {
-                            key: 'product',
-                            path: '/product/:id',
-                            element: React.createElement(ProductPage)
-                        }),
-                        React.createElement(Route, {
+                        createElement(Route, {
                             key: 'login',
                             path: '/login',
-                            element: React.createElement(LoginPage)
+                            element: createElement(LoginPage)
                         }),
-                        React.createElement(Route, {
+                        createElement(Route, {
                             key: 'register',
                             path: '/register',
-                            element: React.createElement(RegisterPage)
+                            element: createElement(RegisterPage)
                         }),
 
                         // Protected routes (require authentication)
-                        React.createElement(Route, {
+                        createElement(Route, {
                             key: 'cart',
                             path: '/cart',
-                            element: React.createElement(ProtectedRoute, null,
-                                React.createElement(CartPage)
+                            element: createElement(ProtectedRoute, null,
+                                createElement(CartPage)
                             )
                         }),
-                        React.createElement(Route, {
+                        createElement(Route, {
                             key: 'account',
                             path: '/account',
-                            element: React.createElement(ProtectedRoute, null,
-                                React.createElement(AccountPage)
+                            element: createElement(ProtectedRoute, null,
+                                createElement(AccountPage)
                             )
                         }),
 
                         // Admin routes (require admin role)
-                        React.createElement(Route, {
+                        createElement(Route, {
                             key: 'admin',
                             path: '/admin/*',
-                            element: React.createElement(ProtectedRoute, {
+                            element: createElement(ProtectedRoute, {
                                 roles: ['admin', 'manager']
-                            }, React.createElement(AdminDashboard))
+                            }, createElement(AdminDashboard))
                         }),
 
                         // 404 route
-                        React.createElement(Route, {
+                        createElement(Route, {
                             key: 'not-found',
                             path: '*',
-                            element: React.createElement(NotFoundPage)
+                            element: createElement(NotFoundPage)
                         })
                     ]))
                 ])

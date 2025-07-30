@@ -286,3 +286,24 @@ const mockOrders = [
         shippingAddress: '123 Main St' 
     }
 ];
+
+// Utility functions for localStorage
+const getStoredData = (key, defaultValue) => {
+    try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : defaultValue;
+    } catch (error) {
+        console.error(`Error getting stored data for key ${key}:`, error);
+        return defaultValue;
+    }
+};
+
+const setStoredData = (key, value) => {
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+        console.error(`Error setting stored data for key ${key}:`, error);
+    }
+};
+
+export { mockProducts, mockUsers, mockOrders, getStoredData, setStoredData };

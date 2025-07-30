@@ -1,22 +1,42 @@
 // js/App.js
+import React, { useState, useEffect, createElement } from 'react';
+import { AuthProvider } from './contexts/AuthContext';
+import { CartProvider } from './contexts/CartContext';
+import Navigation from './components/Navigation';
+import HomePage from './pages/HomePage';
+import ProductsPage from './pages/ProductsPage';
+import CartPage from './pages/CartPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import AccountPage from './pages/AccountPage';
+import AdminDashboard from './pages/AdminDashboard';
+import { mockProducts, mockUsers, mockOrders, getStoredData, setStoredData } from './data/mockData';
 
 const ECommerceApp = () => {
-    const { useState, useEffect } = React;
     
     const [currentUser, setCurrentUser] = useState(() => getStoredData('currentUser', null));
     const [currentPage, setCurrentPage] = useState('home');
     const [products, setProducts] = useState(() => {
         const storedProducts = getStoredData('products', []);
-        return storedProducts.length > 0 ? storedProducts : mockProducts;
+        return Array.isArray(storedProducts) && storedProducts.length > 0 ? storedProducts : mockProducts;
     });
 
     // Save products to localStorage when they change
     useEffect(() => {
         setStoredData('products', products);
     }, [products]);
-    const [users, setUsers] = useState(() => getStoredData('users', mockUsers));
-    const [orders, setOrders] = useState(() => getStoredData('orders', mockOrders));
-    const [cart, setCart] = useState(() => getStoredData('cart', []));
+    const [users, setUsers] = useState(() => {
+        const storedUsers = getStoredData('users', mockUsers);
+        return Array.isArray(storedUsers) ? storedUsers : mockUsers;
+    });
+    const [orders, setOrders] = useState(() => {
+        const storedOrders = getStoredData('orders', mockOrders);
+        return Array.isArray(storedOrders) ? storedOrders : mockOrders;
+    });
+    const [cart, setCart] = useState(() => {
+        const storedCart = getStoredData('cart', []);
+        return Array.isArray(storedCart) ? storedCart : [];
+    });
     const [wishlist, setWishlist] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
@@ -197,14 +217,14 @@ const ECommerceApp = () => {
         goToProductPage, currentProductPage, setCurrentProductPage, totalPages, paginatedProducts
     };
 
-    return React.createElement(AuthProvider, {
+    return createElement(AuthProvider, {
         value: authContextValue
-    }, React.createElement(CartProvider, {
+    }, createElement(CartProvider, {
         value: cartContextValue
-    }, React.createElement('div', {
+    }, createElement('div', {
         className: "min-h-screen bg-gray-50"
     }, [
-        React.createElement(Navigation, {
+        createElement(Navigation, {
             key: 'navigation',
             currentPage,
             setCurrentPage,
@@ -213,18 +233,18 @@ const ECommerceApp = () => {
             isMobile
         }),
         
-        React.createElement('main', {
+        createElement('main', {
             key: 'main',
             className: "pt-16"
         }, [
-            currentPage === 'home' && React.createElement(HomePage, {
+            currentPage === 'home' && createElement(HomePage, {
                 key: 'home',
                 products: filteredProducts,
                 selectedCategory,
                 setSelectedCategory,
                 setCurrentPage
             }),
-            currentPage === 'products' && React.createElement(ProductsPage, {
+            currentPage === 'products' && createElement(ProductsPage, {
                 key: 'products',
                 products: paginatedProducts,
                 selectedCategory,
@@ -234,31 +254,25 @@ const ECommerceApp = () => {
                 setCurrentPage: setCurrentProductPage,
                 totalPages
             }),
-            currentPage === 'product' && React.createElement(ProductPage, {
-                key: 'product',
-                productId: currentProductId,
-                setCurrentPage
-            }),
-            currentPage === 'cart' && React.createElement(CartPage, {
+            currentPage === 'cart' && createElement(CartPage, {
                 key: 'cart'
             }),
-            currentPage === 'login' && React.createElement(LoginPage, {
+            currentPage === 'login' && createElement(LoginPage, {
                 key: 'login',
                 setCurrentPage
             }),
-            currentPage === 'register' && React.createElement(RegisterPage, {
+            currentPage === 'register' && createElement(RegisterPage, {
                 key: 'register',
                 setCurrentPage
             }),
-            currentPage === 'account' && React.createElement(AccountPage, {
+            currentPage === 'account' && createElement(AccountPage, {
                 key: 'account'
             }),
-            currentPage === 'admin' && React.createElement(AdminDashboard, {
+            currentPage === 'admin' && createElement(AdminDashboard, {
                 key: 'admin'
             })
         ])
     ])));
 };
 
-// Render the app
-ReactDOM.render(React.createElement(ECommerceApp), document.getElementById('root'));
+export default ECommerceApp;

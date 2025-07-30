@@ -2,6 +2,7 @@
 import React, { createElement } from 'react';
 import { useCart } from '../contexts/CartContext';
 import { HeartIcon, StarIcon } from '../utils/icons';
+import LazyImage from './LazyImage';
 
 const ProductCard = ({ product }) => {
     const { addToCart, wishlist, toggleWishlist, goToProductPage } = useCart();
