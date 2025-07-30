@@ -13,10 +13,9 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "npx serve src -l 3000",
+    "build": "echo 'No build needed - serving static files'",
+    "dev": "npx serve src -l 3000"
   },
   "eslintConfig": {
     "extends": [
