@@ -1,8 +1,10 @@
 // js/pages/RegisterPage.js
+import React, { useState, createElement } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 
 const RegisterPage = ({ setCurrentPage }) => {
     const { register } = useAuth();
-    const [formData, setFormData] = React.useState({
+    const [formData, setFormData] = useState({
         name: '',
         email: '',
         password: '',
@@ -10,8 +12,8 @@ const RegisterPage = ({ setCurrentPage }) => {
         address: '',
         phone: ''
     });
-    const [error, setError] = React.useState('');
-    const [loading, setLoading] = React.useState(false);
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -50,34 +52,34 @@ const RegisterPage = ({ setCurrentPage }) => {
         if (error) setError(''); // Clear error when user starts typing
     };
 
-    return React.createElement('div', {
+    return createElement('div', {
         className: "max-w-md mx-auto mt-8 px-4"
-    }, React.createElement('div', {
+    }, createElement('div', {
         className: "bg-white rounded-lg shadow-md p-8"
     }, [
-        React.createElement('h2', {
+        createElement('h2', {
             key: 'title',
             className: "text-2xl font-bold text-gray-900 mb-6 text-center"
         }, 'Create Account'),
         
-        error && React.createElement('div', {
+        error && createElement('div', {
             key: 'error',
             className: "bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
         }, error),
 
-        React.createElement('form', {
+        createElement('form', {
             key: 'register-form',
             onSubmit: handleSubmit,
             className: "space-y-4"
         }, [
-            React.createElement('div', {
+            createElement('div', {
                 key: 'name-field'
             }, [
-                React.createElement('label', {
+                createElement('label', {
                     key: 'name-label',
                     className: "block text-sm font-medium text-gray-700 mb-2"
                 }, 'Full Name'),
-                React.createElement('input', {
+                createElement('input', {
                     key: 'name-input',
                     type: "text",
                     value: formData.name,
@@ -87,14 +89,14 @@ const RegisterPage = ({ setCurrentPage }) => {
                     disabled: loading
                 })
             ]),
-            React.createElement('div', {
+            createElement('div', {
                 key: 'email-field'
             }, [
-                React.createElement('label', {
+                createElement('label', {
                     key: 'email-label',
                     className: "block text-sm font-medium text-gray-700 mb-2"
                 }, 'Email Address'),
-                React.createElement('input', {
+                createElement('input', {
                     key: 'email-input',
                     type: "email",
                     value: formData.email,
@@ -104,14 +106,14 @@ const RegisterPage = ({ setCurrentPage }) => {
                     disabled: loading
                 })
             ]),
-            React.createElement('div', {
+            createElement('div', {
                 key: 'password-field'
             }, [
-                React.createElement('label', {
+                createElement('label', {
                     key: 'password-label',
                     className: "block text-sm font-medium text-gray-700 mb-2"
                 }, 'Password'),
-                React.createElement('input', {
+                createElement('input', {
                     key: 'password-input',
                     type: "password",
                     value: formData.password,
@@ -122,14 +124,14 @@ const RegisterPage = ({ setCurrentPage }) => {
                     minLength: 6
                 })
             ]),
-            React.createElement('div', {
+            createElement('div', {
                 key: 'confirm-password-field'
             }, [
-                React.createElement('label', {
+                createElement('label', {
                     key: 'confirm-password-label',
                     className: "block text-sm font-medium text-gray-700 mb-2"
                 }, 'Confirm Password'),
-                React.createElement('input', {
+                createElement('input', {
                     key: 'confirm-password-input',
                     type: "password",
                     value: formData.confirmPassword,
@@ -139,14 +141,14 @@ const RegisterPage = ({ setCurrentPage }) => {
                     disabled: loading
                 })
             ]),
-            React.createElement('div', {
+            createElement('div', {
                 key: 'address-field'
             }, [
-                React.createElement('label', {
+                createElement('label', {
                     key: 'address-label',
                     className: "block text-sm font-medium text-gray-700 mb-2"
                 }, 'Address'),
-                React.createElement('input', {
+                createElement('input', {
                     key: 'address-input',
                     type: "text",
                     value: formData.address,
@@ -156,14 +158,14 @@ const RegisterPage = ({ setCurrentPage }) => {
                     disabled: loading
                 })
             ]),
-            React.createElement('div', {
+            createElement('div', {
                 key: 'phone-field'
             }, [
-                React.createElement('label', {
+                createElement('label', {
                     key: 'phone-label',
                     className: "block text-sm font-medium text-gray-700 mb-2"
                 }, 'Phone Number'),
-                React.createElement('input', {
+                createElement('input', {
                     key: 'phone-input',
                     type: "tel",
                     value: formData.phone,
@@ -173,7 +175,7 @@ const RegisterPage = ({ setCurrentPage }) => {
                     disabled: loading
                 })
             ]),
-            React.createElement('button', {
+            createElement('button', {
                 key: 'submit-btn',
                 type: "submit",
                 disabled: loading,
@@ -185,14 +187,14 @@ const RegisterPage = ({ setCurrentPage }) => {
             }, loading ? 'Creating Account...' : 'Create Account')
         ]),
 
-        React.createElement('div', {
+        createElement('div', {
             key: 'login-link',
             className: "mt-6 text-center"
-        }, React.createElement('p', {
+        }, createElement('p', {
             className: "text-gray-600"
         }, [
             "Already have an account? ",
-            React.createElement('button', {
+            createElement('button', {
                 key: 'login-btn',
                 onClick: () => setCurrentPage('login'),
                 className: "text-blue-600 hover:text-blue-800 font-medium"
@@ -200,3 +202,5 @@ const RegisterPage = ({ setCurrentPage }) => {
         ]))
     ]));
 };
+
+export default RegisterPage;

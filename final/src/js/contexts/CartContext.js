@@ -1,6 +1,5 @@
 // js/contexts/CartContext.js
-
-const { createContext, useContext } = React;
+import React, { createContext, useContext, createElement } from 'react';
 
 // Create cart context
 const CartContext = createContext();
@@ -16,9 +15,11 @@ const useCart = () => {
 
 // Cart provider component
 const CartProvider = ({ children, value }) => {
-    return React.createElement(
+    return createElement(
         CartContext.Provider,
         { value },
         children
     );
 };
+
+export { useCart, CartProvider };

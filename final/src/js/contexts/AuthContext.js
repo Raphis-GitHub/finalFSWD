@@ -1,6 +1,5 @@
 // js/contexts/AuthContext.js
-
-const { createContext, useContext } = React;
+import React, { createContext, useContext, createElement } from 'react';
 
 // Create authentication context
 const AuthContext = createContext();
@@ -16,9 +15,11 @@ const useAuth = () => {
 
 // Auth provider component
 const AuthProvider = ({ children, value }) => {
-    return React.createElement(
+    return createElement(
         AuthContext.Provider,
         { value },
         children
     );
 };
+
+export { useAuth, AuthProvider };

@@ -1,22 +1,26 @@
 // js/pages/AccountPage.js
+import React, { useState, createElement } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { useCart } from '../contexts/CartContext';
+import LazyImage from '../components/LazyImage';
 
 const AccountPage = () => {
     const { currentUser, updateProfile } = useAuth();
     const { orders, wishlist, toggleWishlist } = useCart();
-    const [activeTab, setActiveTab] = React.useState('profile');
-    const [editMode, setEditMode] = React.useState(false);
-    const [profileData, setProfileData] = React.useState({
+    const [activeTab, setActiveTab] = useState('profile');
+    const [editMode, setEditMode] = useState(false);
+    const [profileData, setProfileData] = useState({
         name: currentUser?.name || '',
         email: currentUser?.email || '',
         address: currentUser?.address || '',
         phone: currentUser?.phone || ''
     });
-    const [passwordData, setPasswordData] = React.useState({
+    const [passwordData, setPasswordData] = useState({
         currentPassword: '',
         newPassword: '',
         confirmPassword: ''
     });
-    const [message, setMessage] = React.useState({ type: '', text: '' });
+    const [message, setMessage] = useState({ type: '', text: '' });
 
     const userOrders = orders.filter(order => order.userId === currentUser?.id) || [];
 
@@ -67,58 +71,58 @@ const AccountPage = () => {
     };
 
     if (!currentUser) {
-        return React.createElement('div', {
+        return createElement('div', {
             className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
-        }, React.createElement('div', {
+        }, createElement('div', {
             className: "text-center py-12"
-        }, React.createElement('h2', {
+        }, createElement('h2', {
             className: "text-2xl font-bold text-gray-900 mb-4"
         }, 'Please log in to view your account')));
     }
 
-    return React.createElement('div', {
+    return createElement('div', {
         className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
     }, [
-        React.createElement('div', {
+        createElement('div', {
             key: 'page-header',
             className: "mb-8"
         }, [
-            React.createElement('h1', {
+            createElement('h1', {
                 key: 'page-title',
                 className: "text-3xl font-bold text-gray-900"
             }, 'My Account'),
-            React.createElement('p', {
+            createElement('p', {
                 key: 'page-subtitle',
                 className: "text-gray-600 mt-2"
             }, `Welcome back, ${currentUser.name}!`)
         ]),
 
-        message.text && React.createElement('div', {
+        message.text && createElement('div', {
             key: 'message',
             className: `mb-6 p-4 rounded-md ${
                 message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
             }`
         }, message.text),
 
-        React.createElement('div', {
+        createElement('div', {
             key: 'account-content',
             className: "grid grid-cols-1 lg:grid-cols-4 gap-8"
         }, [
             // Sidebar Navigation
-            React.createElement('div', {
+            createElement('div', {
                 key: 'sidebar',
                 className: "lg:col-span-1"
-            }, React.createElement('div', {
+            }, createElement('div', {
                 className: "bg-white rounded-lg shadow-md p-6"
             }, [
-                React.createElement('h3', {
+                createElement('h3', {
                     key: 'nav-title',
                     className: "text-lg font-semibold text-gray-900 mb-4"
                 }, 'Account Settings'),
-                React.createElement('nav', {
+                createElement('nav', {
                     key: 'nav-items',
                     className: "space-y-2"
-                }, tabs.map(tab => React.createElement('button', {
+                }, tabs.map(tab => createElement('button', {
                     key: tab.id,
                     onClick: () => setActiveTab(tab.id),
                     className: `w-full text-left px-3 py-2 rounded-md transition-colors flex items-center ${
@@ -127,7 +131,7 @@ const AccountPage = () => {
                             : 'text-gray-700 hover:bg-gray-100'
                     }`
                 }, [
-                    React.createElement('span', {
+                    createElement('span', {
                         key: 'tab-icon',
                         className: "mr-3"
                     }, tab.icon),
@@ -136,25 +140,25 @@ const AccountPage = () => {
             ])),
 
             // Main Content
-            React.createElement('div', {
+            createElement('div', {
                 key: 'main-content',
                 className: "lg:col-span-3"
-            }, React.createElement('div', {
+            }, createElement('div', {
                 className: "bg-white rounded-lg shadow-md p-6"
             }, [
                 // Profile Tab
-                activeTab === 'profile' && React.createElement('div', {
+                activeTab === 'profile' && createElement('div', {
                     key: 'profile-content'
                 }, [
-                    React.createElement('div', {
+                    createElement('div', {
                         key: 'profile-header',
                         className: "flex justify-between items-center mb-6"
                     }, [
-                        React.createElement('h2', {
+                        createElement('h2', {
                             key: 'profile-title',
                             className: "text-xl font-semibold text-gray-900"
                         }, 'Profile Information'),
-                        React.createElement('button', {
+                        createElement('button', {
                             key: 'edit-btn',
                             onClick: () => setEditMode(!editMode),
                             className: `px-4 py-2 rounded-md transition-colors ${
@@ -165,23 +169,23 @@ const AccountPage = () => {
                         }, editMode ? 'Cancel' : 'Edit Profile')
                     ]),
 
-                    editMode ? React.createElement('form', {
+                    editMode ? createElement('form', {
                         key: 'profile-form',
                         onSubmit: handleProfileUpdate,
                         className: "space-y-4"
                     }, [
-                        React.createElement('div', {
+                        createElement('div', {
                             key: 'name-field',
                             className: "grid grid-cols-1 md:grid-cols-2 gap-4"
                         }, [
-                            React.createElement('div', {
+                            createElement('div', {
                                 key: 'name-input'
                             }, [
-                                React.createElement('label', {
+                                createElement('label', {
                                     key: 'name-label',
                                     className: "block text-sm font-medium text-gray-700 mb-2"
                                 }, 'Full Name'),
-                                React.createElement('input', {
+                                createElement('input', {
                                     key: 'name-field-input',
                                     type: "text",
                                     value: profileData.name,
@@ -189,14 +193,14 @@ const AccountPage = () => {
                                     className: "w-full p-3 border border-gray-300 rounded-md"
                                 })
                             ]),
-                            React.createElement('div', {
+                            createElement('div', {
                                 key: 'email-input'
                             }, [
-                                React.createElement('label', {
+                                createElement('label', {
                                     key: 'email-label',
                                     className: "block text-sm font-medium text-gray-700 mb-2"
                                 }, 'Email Address'),
-                                React.createElement('input', {
+                                createElement('input', {
                                     key: 'email-field-input',
                                     type: "email",
                                     value: profileData.email,
@@ -205,14 +209,14 @@ const AccountPage = () => {
                                 })
                             ])
                         ]),
-                        React.createElement('div', {
+                        createElement('div', {
                             key: 'address-field'
                         }, [
-                            React.createElement('label', {
+                            createElement('label', {
                                 key: 'address-label',
                                 className: "block text-sm font-medium text-gray-700 mb-2"
                             }, 'Address'),
-                            React.createElement('input', {
+                            createElement('input', {
                                 key: 'address-input',
                                 type: "text",
                                 value: profileData.address,
@@ -220,14 +224,14 @@ const AccountPage = () => {
                                 className: "w-full p-3 border border-gray-300 rounded-md"
                             })
                         ]),
-                        React.createElement('div', {
+                        createElement('div', {
                             key: 'phone-field'
                         }, [
-                            React.createElement('label', {
+                            createElement('label', {
                                 key: 'phone-label',
                                 className: "block text-sm font-medium text-gray-700 mb-2"
                             }, 'Phone Number'),
-                            React.createElement('input', {
+                            createElement('input', {
                                 key: 'phone-input',
                                 type: "tel",
                                 value: profileData.phone,
@@ -235,64 +239,64 @@ const AccountPage = () => {
                                 className: "w-full p-3 border border-gray-300 rounded-md"
                             })
                         ]),
-                        React.createElement('button', {
+                        createElement('button', {
                             key: 'save-btn',
                             type: "submit",
                             className: "bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition-colors"
                         }, 'Save Changes')
-                    ]) : React.createElement('div', {
+                    ]) : createElement('div', {
                         key: 'profile-display',
                         className: "space-y-4"
                     }, [
-                        React.createElement('div', {
+                        createElement('div', {
                             key: 'display-name',
                             className: "grid grid-cols-1 md:grid-cols-2 gap-4"
                         }, [
-                            React.createElement('div', {
+                            createElement('div', {
                                 key: 'name-display'
                             }, [
-                                React.createElement('label', {
+                                createElement('label', {
                                     key: 'name-display-label',
                                     className: "block text-sm font-medium text-gray-700 mb-1"
                                 }, 'Full Name'),
-                                React.createElement('p', {
+                                createElement('p', {
                                     key: 'name-display-value',
                                     className: "text-gray-900"
                                 }, currentUser.name)
                             ]),
-                            React.createElement('div', {
+                            createElement('div', {
                                 key: 'email-display'
                             }, [
-                                React.createElement('label', {
+                                createElement('label', {
                                     key: 'email-display-label',
                                     className: "block text-sm font-medium text-gray-700 mb-1"
                                 }, 'Email Address'),
-                                React.createElement('p', {
+                                createElement('p', {
                                     key: 'email-display-value',
                                     className: "text-gray-900"
                                 }, currentUser.email)
                             ])
                         ]),
-                        React.createElement('div', {
+                        createElement('div', {
                             key: 'address-display'
                         }, [
-                            React.createElement('label', {
+                            createElement('label', {
                                 key: 'address-display-label',
                                 className: "block text-sm font-medium text-gray-700 mb-1"
                             }, 'Address'),
-                            React.createElement('p', {
+                            createElement('p', {
                                 key: 'address-display-value',
                                 className: "text-gray-900"
                             }, currentUser.address)
                         ]),
-                        React.createElement('div', {
+                        createElement('div', {
                             key: 'phone-display'
                         }, [
-                            React.createElement('label', {
+                            createElement('label', {
                                 key: 'phone-display-label',
                                 className: "block text-sm font-medium text-gray-700 mb-1"
                             }, 'Phone Number'),
-                            React.createElement('p', {
+                            createElement('p', {
                                 key: 'phone-display-value',
                                 className: "text-gray-900"
                             }, currentUser.phone)
@@ -301,133 +305,133 @@ const AccountPage = () => {
                 ]),
 
                 // Orders Tab
-                activeTab === 'orders' && React.createElement('div', {
+                activeTab === 'orders' && createElement('div', {
                     key: 'orders-content'
                 }, [
-                    React.createElement('h2', {
+                    createElement('h2', {
                         key: 'orders-title',
                         className: "text-xl font-semibold text-gray-900 mb-6"
                     }, 'Order History'),
                     
-                    userOrders.length === 0 ? React.createElement('div', {
+                    userOrders.length === 0 ? createElement('div', {
                         key: 'no-orders',
                         className: "text-center py-8"
                     }, [
-                        React.createElement('p', {
+                        createElement('p', {
                             key: 'no-orders-text',
                             className: "text-gray-600 text-lg"
                         }, 'You haven\'t placed any orders yet.'),
-                        React.createElement('button', {
+                        createElement('button', {
                             key: 'shop-now-btn',
                             onClick: () => window.location.hash = '#products',
                             className: "mt-4 bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition-colors"
                         }, 'Start Shopping')
-                    ]) : React.createElement('div', {
+                    ]) : createElement('div', {
                         key: 'orders-list',
                         className: "space-y-4"
-                    }, userOrders.map(order => React.createElement('div', {
+                    }, userOrders.map(order => createElement('div', {
                         key: order.id,
                         className: "border border-gray-200 rounded-lg p-6"
                     }, [
-                        React.createElement('div', {
+                        createElement('div', {
                             key: 'order-header',
                             className: "flex justify-between items-start mb-4"
                         }, [
-                            React.createElement('div', {
+                            createElement('div', {
                                 key: 'order-info'
                             }, [
-                                React.createElement('h3', {
+                                createElement('h3', {
                                     key: 'order-id',
                                     className: "font-semibold text-gray-900"
                                 }, `Order #${order.id}`),
-                                React.createElement('p', {
+                                createElement('p', {
                                     key: 'order-date',
                                     className: "text-sm text-gray-600"
                                 }, `Placed on ${order.date}`)
                             ]),
-                            React.createElement('span', {
+                            createElement('span', {
                                 key: 'order-status',
                                 className: `px-3 py-1 rounded-full text-xs font-medium ${getOrderStatusColor(order.status)}`
                             }, order.status.charAt(0).toUpperCase() + order.status.slice(1))
                         ]),
-                        React.createElement('div', {
+                        createElement('div', {
                             key: 'order-items',
                             className: "mb-4"
                         }, [
-                            React.createElement('h4', {
+                            createElement('h4', {
                                 key: 'items-title',
                                 className: "font-medium text-gray-900 mb-2"
                             }, 'Items:'),
-                            React.createElement('ul', {
+                            createElement('ul', {
                                 key: 'items-list',
                                 className: "space-y-1"
-                            }, order.items.map((item, index) => React.createElement('li', {
+                            }, order.items.map((item, index) => createElement('li', {
                                 key: index,
                                 className: "text-sm text-gray-600"
                             }, `${item.name} × ${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`)))
                         ]),
-                        React.createElement('div', {
+                        createElement('div', {
                             key: 'order-total',
                             className: "text-right"
-                        }, React.createElement('p', {
+                        }, createElement('p', {
                             className: "font-semibold text-lg"
                         }, `Total: $${order.total.toFixed(2)}`))
                     ])))
                 ]),
 
                 // Wishlist Tab
-                activeTab === 'wishlist' && React.createElement('div', {
+                activeTab === 'wishlist' && createElement('div', {
                     key: 'wishlist-content'
                 }, [
-                    React.createElement('h2', {
+                    createElement('h2', {
                         key: 'wishlist-title',
                         className: "text-xl font-semibold text-gray-900 mb-6"
                     }, 'My Wishlist'),
                     
-                    wishlist.length === 0 ? React.createElement('div', {
+                    wishlist.length === 0 ? createElement('div', {
                         key: 'no-wishlist',
                         className: "text-center py-8"
                     }, [
-                        React.createElement('p', {
+                        createElement('p', {
                             key: 'no-wishlist-text',
                             className: "text-gray-600 text-lg"
                         }, 'Your wishlist is empty.'),
-                        React.createElement('button', {
+                        createElement('button', {
                             key: 'browse-products-btn',
                             onClick: () => window.location.hash = '#products',
                             className: "mt-4 bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition-colors"
                         }, 'Browse Products')
-                    ]) : React.createElement('div', {
+                    ]) : createElement('div', {
                         key: 'wishlist-grid',
                         className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                    }, wishlist.map(product => React.createElement('div', {
+                    }, wishlist.map(product => createElement('div', {
                         key: product.id,
                         className: "bg-white border rounded-lg p-4 shadow-sm"
                     }, [
-                        React.createElement(LazyImage, {
+                        createElement(LazyImage, {
                             key: 'product-image',
                             src: product.image,
                             alt: product.name,
                             className: "w-full h-40 object-cover rounded-md mb-3"
                         }),
-                        React.createElement('h3', {
+                        createElement('h3', {
                             key: 'product-name',
                             className: "font-semibold text-gray-900 mb-2"
                         }, product.name),
-                        React.createElement('p', {
+                        createElement('p', {
                             key: 'product-price',
                             className: "text-lg font-bold text-blue-600 mb-3"
                         }, `$${product.price.toFixed(2)}`),
-                        React.createElement('div', {
+                        createElement('div', {
                             key: 'product-actions',
                             className: "flex space-x-2"
                         }, [
-                            React.createElement('button', {
+                            createElement('button', {
                                 key: 'remove-btn',
                                 onClick: () => toggleWishlist(product),
                                 className: "flex-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
                             }, 'Remove'),
-                            React.createElement('button', {
+                            createElement('button', {
                                 key: 'view-btn',
                                 onClick: () => {
                                     // Will implement product page navigation later
@@ -440,27 +444,27 @@ const AccountPage = () => {
                 ]),
 
                 // Security Tab
-                activeTab === 'security' && React.createElement('div', {
+                activeTab === 'security' && createElement('div', {
                     key: 'security-content'
                 }, [
-                    React.createElement('h2', {
+                    createElement('h2', {
                         key: 'security-title',
                         className: "text-xl font-semibold text-gray-900 mb-6"
                     }, 'Security Settings'),
                     
-                    React.createElement('form', {
+                    createElement('form', {
                         key: 'password-form',
                         onSubmit: handlePasswordChange,
                         className: "space-y-4 max-w-md"
                     }, [
-                        React.createElement('div', {
+                        createElement('div', {
                             key: 'current-password-field'
                         }, [
-                            React.createElement('label', {
+                            createElement('label', {
                                 key: 'current-password-label',
                                 className: "block text-sm font-medium text-gray-700 mb-2"
                             }, 'Current Password'),
-                            React.createElement('input', {
+                            createElement('input', {
                                 key: 'current-password-input',
                                 type: "password",
                                 value: passwordData.currentPassword,
@@ -469,14 +473,14 @@ const AccountPage = () => {
                                 required: true
                             })
                         ]),
-                        React.createElement('div', {
+                        createElement('div', {
                             key: 'new-password-field'
                         }, [
-                            React.createElement('label', {
+                            createElement('label', {
                                 key: 'new-password-label',
                                 className: "block text-sm font-medium text-gray-700 mb-2"
                             }, 'New Password'),
-                            React.createElement('input', {
+                            createElement('input', {
                                 key: 'new-password-input',
                                 type: "password",
                                 value: passwordData.newPassword,
@@ -486,14 +490,14 @@ const AccountPage = () => {
                                 minLength: 6
                             })
                         ]),
-                        React.createElement('div', {
+                        createElement('div', {
                             key: 'confirm-password-field'
                         }, [
-                            React.createElement('label', {
+                            createElement('label', {
                                 key: 'confirm-password-label',
                                 className: "block text-sm font-medium text-gray-700 mb-2"
                             }, 'Confirm New Password'),
-                            React.createElement('input', {
+                            createElement('input', {
                                 key: 'confirm-password-input',
                                 type: "password",
                                 value: passwordData.confirmPassword,
@@ -502,7 +506,7 @@ const AccountPage = () => {
                                 required: true
                             })
                         ]),
-                        React.createElement('button', {
+                        createElement('button', {
                             key: 'change-password-btn',
                             type: "submit",
                             className: "bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition-colors"
@@ -513,3 +517,5 @@ const AccountPage = () => {
         ])
     ]);
 };
+
+export default AccountPage;

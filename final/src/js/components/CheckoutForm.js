@@ -1,9 +1,12 @@
 // js/components/CheckoutForm.js
+import React, { useState, createElement } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { useCart } from '../contexts/CartContext';
 
 const CheckoutForm = ({ onSubmit, onCancel }) => {
     const { currentUser } = useAuth();
     const { cartTotal } = useCart();
-    const [formData, setFormData] = React.useState({
+    const [formData, setFormData] = useState({
         // Shipping Information
         shippingAddress: currentUser?.address || '',
         city: '',
@@ -26,8 +29,8 @@ const CheckoutForm = ({ onSubmit, onCancel }) => {
         orderNotes: ''
     });
     
-    const [errors, setErrors] = React.useState({});
-    const [processing, setProcessing] = React.useState(false);
+    const [errors, setErrors] = useState({});
+    const [processing, setProcessing] = useState(false);
 
     const validateForm = () => {
         const newErrors = {};
@@ -104,51 +107,51 @@ const CheckoutForm = ({ onSubmit, onCancel }) => {
     const tax = cartTotal * 0.08;
     const total = cartTotal + shippingTotal + tax;
 
-    return React.createElement('div', {
+    return createElement('div', {
         className: "max-w-4xl mx-auto"
     }, [
-        React.createElement('h3', {
+        createElement('h3', {
             key: 'checkout-title',
             className: "text-xl font-semibold text-gray-900 mb-6"
         }, 'Checkout'),
         
-        errors.general && React.createElement('div', {
+        errors.general && createElement('div', {
             key: 'general-error',
             className: "bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6"
         }, errors.general),
 
-        React.createElement('form', {
+        createElement('form', {
             key: 'checkout-form',
             onSubmit: handleSubmit,
             className: "grid grid-cols-1 lg:grid-cols-2 gap-8"
         }, [
             // Left Column - Shipping & Payment
-            React.createElement('div', {
+            createElement('div', {
                 key: 'left-column',
                 className: "space-y-6"
             }, [
                 // Shipping Information
-                React.createElement('div', {
+                createElement('div', {
                     key: 'shipping-section',
                     className: "bg-gray-50 p-6 rounded-lg"
                 }, [
-                    React.createElement('h4', {
+                    createElement('h4', {
                         key: 'shipping-title',
                         className: "text-lg font-medium text-gray-900 mb-4"
                     }, 'Shipping Information'),
                     
-                    React.createElement('div', {
+                    createElement('div', {
                         key: 'shipping-fields',
                         className: "space-y-4"
                     }, [
-                        React.createElement('div', {
+                        createElement('div', {
                             key: 'address-field'
                         }, [
-                            React.createElement('label', {
+                            createElement('label', {
                                 key: 'address-label',
                                 className: "block text-sm font-medium text-gray-700 mb-1"
                             }, 'Street Address *'),
-                            React.createElement('input', {
+                            createElement('input', {
                                 key: 'address-input',
                                 type: "text",
                                 value: formData.shippingAddress,
@@ -156,24 +159,24 @@ const CheckoutForm = ({ onSubmit, onCancel }) => {
                                 className: `w-full p-3 border rounded-md ${errors.shippingAddress ? 'border-red-500' : 'border-gray-300'}`,
                                 disabled: processing
                             }),
-                            errors.shippingAddress && React.createElement('p', {
+                            errors.shippingAddress && createElement('p', {
                                 key: 'address-error',
                                 className: "text-red-500 text-sm mt-1"
                             }, errors.shippingAddress)
                         ]),
                         
-                        React.createElement('div', {
+                        createElement('div', {
                             key: 'city-zip-row',
                             className: "grid grid-cols-2 gap-4"
                         }, [
-                            React.createElement('div', {
+                            createElement('div', {
                                 key: 'city-field'
                             }, [
-                                React.createElement('label', {
+                                createElement('label', {
                                     key: 'city-label',
                                     className: "block text-sm font-medium text-gray-700 mb-1"
                                 }, 'City *'),
-                                React.createElement('input', {
+                                createElement('input', {
                                     key: 'city-input',
                                     type: "text",
                                     value: formData.city,
@@ -181,19 +184,19 @@ const CheckoutForm = ({ onSubmit, onCancel }) => {
                                     className: `w-full p-3 border rounded-md ${errors.city ? 'border-red-500' : 'border-gray-300'}`,
                                     disabled: processing
                                 }),
-                                errors.city && React.createElement('p', {
+                                errors.city && createElement('p', {
                                     key: 'city-error',
                                     className: "text-red-500 text-sm mt-1"
                                 }, errors.city)
                             ]),
-                            React.createElement('div', {
+                            createElement('div', {
                                 key: 'zip-field'
                             }, [
-                                React.createElement('label', {
+                                createElement('label', {
                                     key: 'zip-label',
                                     className: "block text-sm font-medium text-gray-700 mb-1"
                                 }, 'ZIP Code *'),
-                                React.createElement('input', {
+                                createElement('input', {
                                     key: 'zip-input',
                                     type: "text",
                                     value: formData.zipCode,
@@ -201,7 +204,7 @@ const CheckoutForm = ({ onSubmit, onCancel }) => {
                                     className: `w-full p-3 border rounded-md ${errors.zipCode ? 'border-red-500' : 'border-gray-300'}`,
                                     disabled: processing
                                 }),
-                                errors.zipCode && React.createElement('p', {
+                                errors.zipCode && createElement('p', {
                                     key: 'zip-error',
                                     className: "text-red-500 text-sm mt-1"
                                 }, errors.zipCode)
@@ -211,27 +214,27 @@ const CheckoutForm = ({ onSubmit, onCancel }) => {
                 ]),
 
                 // Payment Information
-                React.createElement('div', {
+                createElement('div', {
                     key: 'payment-section',
                     className: "bg-gray-50 p-6 rounded-lg"
                 }, [
-                    React.createElement('h4', {
+                    createElement('h4', {
                         key: 'payment-title',
                         className: "text-lg font-medium text-gray-900 mb-4"
                     }, 'Payment Information'),
                     
-                    React.createElement('div', {
+                    createElement('div', {
                         key: 'payment-fields',
                         className: "space-y-4"
                     }, [
-                        React.createElement('div', {
+                        createElement('div', {
                             key: 'cardholder-field'
                         }, [
-                            React.createElement('label', {
+                            createElement('label', {
                                 key: 'cardholder-label',
                                 className: "block text-sm font-medium text-gray-700 mb-1"
                             }, 'Cardholder Name *'),
-                            React.createElement('input', {
+                            createElement('input', {
                                 key: 'cardholder-input',
                                 type: "text",
                                 value: formData.cardholderName,
@@ -239,20 +242,20 @@ const CheckoutForm = ({ onSubmit, onCancel }) => {
                                 className: `w-full p-3 border rounded-md ${errors.cardholderName ? 'border-red-500' : 'border-gray-300'}`,
                                 disabled: processing
                             }),
-                            errors.cardholderName && React.createElement('p', {
+                            errors.cardholderName && createElement('p', {
                                 key: 'cardholder-error',
                                 className: "text-red-500 text-sm mt-1"
                             }, errors.cardholderName)
                         ]),
                         
-                        React.createElement('div', {
+                        createElement('div', {
                             key: 'card-number-field'
                         }, [
-                            React.createElement('label', {
+                            createElement('label', {
                                 key: 'card-number-label',
                                 className: "block text-sm font-medium text-gray-700 mb-1"
                             }, 'Card Number *'),
-                            React.createElement('input', {
+                            createElement('input', {
                                 key: 'card-number-input',
                                 type: "text",
                                 value: formData.cardNumber,
@@ -261,24 +264,24 @@ const CheckoutForm = ({ onSubmit, onCancel }) => {
                                 placeholder: "1234 5678 9012 3456",
                                 disabled: processing
                             }),
-                            errors.cardNumber && React.createElement('p', {
+                            errors.cardNumber && createElement('p', {
                                 key: 'card-number-error',
                                 className: "text-red-500 text-sm mt-1"
                             }, errors.cardNumber)
                         ]),
                         
-                        React.createElement('div', {
+                        createElement('div', {
                             key: 'expiry-cvv-row',
                             className: "grid grid-cols-2 gap-4"
                         }, [
-                            React.createElement('div', {
+                            createElement('div', {
                                 key: 'expiry-field'
                             }, [
-                                React.createElement('label', {
+                                createElement('label', {
                                     key: 'expiry-label',
                                     className: "block text-sm font-medium text-gray-700 mb-1"
                                 }, 'MM/YY *'),
-                                React.createElement('input', {
+                                createElement('input', {
                                     key: 'expiry-input',
                                     type: "text",
                                     value: formData.expiryDate,
@@ -288,19 +291,19 @@ const CheckoutForm = ({ onSubmit, onCancel }) => {
                                     maxLength: 5,
                                     disabled: processing
                                 }),
-                                errors.expiryDate && React.createElement('p', {
+                                errors.expiryDate && createElement('p', {
                                     key: 'expiry-error',
                                     className: "text-red-500 text-sm mt-1"
                                 }, errors.expiryDate)
                             ]),
-                            React.createElement('div', {
+                            createElement('div', {
                                 key: 'cvv-field'
                             }, [
-                                React.createElement('label', {
+                                createElement('label', {
                                     key: 'cvv-label',
                                     className: "block text-sm font-medium text-gray-700 mb-1"
                                 }, 'CVV *'),
-                                React.createElement('input', {
+                                createElement('input', {
                                     key: 'cvv-input',
                                     type: "text",
                                     value: formData.cvv,
@@ -310,7 +313,7 @@ const CheckoutForm = ({ onSubmit, onCancel }) => {
                                     maxLength: 4,
                                     disabled: processing
                                 }),
-                                errors.cvv && React.createElement('p', {
+                                errors.cvv && createElement('p', {
                                     key: 'cvv-error',
                                     className: "text-red-500 text-sm mt-1"
                                 }, errors.cvv)
@@ -320,14 +323,14 @@ const CheckoutForm = ({ onSubmit, onCancel }) => {
                 ]),
 
                 // Order Notes
-                React.createElement('div', {
+                createElement('div', {
                     key: 'notes-section'
                 }, [
-                    React.createElement('label', {
+                    createElement('label', {
                         key: 'notes-label',
                         className: "block text-sm font-medium text-gray-700 mb-2"
                     }, 'Order Notes (Optional)'),
-                    React.createElement('textarea', {
+                    createElement('textarea', {
                         key: 'notes-input',
                         value: formData.orderNotes,
                         onChange: (e) => setFormData(prev => ({ ...prev, orderNotes: e.target.value })),
@@ -340,57 +343,57 @@ const CheckoutForm = ({ onSubmit, onCancel }) => {
             ]),
 
             // Right Column - Order Summary
-            React.createElement('div', {
+            createElement('div', {
                 key: 'right-column'
-            }, React.createElement('div', {
+            }, createElement('div', {
                 className: "bg-white border border-gray-200 rounded-lg p-6 sticky top-4"
             }, [
-                React.createElement('h4', {
+                createElement('h4', {
                     key: 'summary-title',
                     className: "text-lg font-semibold text-gray-900 mb-4"
                 }, 'Order Summary'),
                 
-                React.createElement('div', {
+                createElement('div', {
                     key: 'summary-details',
                     className: "space-y-3 mb-6"
                 }, [
-                    React.createElement('div', {
+                    createElement('div', {
                         key: 'subtotal',
                         className: "flex justify-between"
                     }, [
-                        React.createElement('span', { key: 'subtotal-label' }, 'Subtotal'),
-                        React.createElement('span', { key: 'subtotal-value' }, `$${cartTotal.toFixed(2)}`)
+                        createElement('span', { key: 'subtotal-label' }, 'Subtotal'),
+                        createElement('span', { key: 'subtotal-value' }, `$${cartTotal.toFixed(2)}`)
                     ]),
-                    React.createElement('div', {
+                    createElement('div', {
                         key: 'shipping',
                         className: "flex justify-between"
                     }, [
-                        React.createElement('span', { key: 'shipping-label' }, 'Shipping'),
-                        React.createElement('span', { key: 'shipping-value' }, shippingTotal === 0 ? 'Free' : `$${shippingTotal.toFixed(2)}`)
+                        createElement('span', { key: 'shipping-label' }, 'Shipping'),
+                        createElement('span', { key: 'shipping-value' }, shippingTotal === 0 ? 'Free' : `$${shippingTotal.toFixed(2)}`)
                     ]),
-                    React.createElement('div', {
+                    createElement('div', {
                         key: 'tax',
                         className: "flex justify-between"
                     }, [
-                        React.createElement('span', { key: 'tax-label' }, 'Tax'),
-                        React.createElement('span', { key: 'tax-value' }, `$${tax.toFixed(2)}`)
+                        createElement('span', { key: 'tax-label' }, 'Tax'),
+                        createElement('span', { key: 'tax-value' }, `$${tax.toFixed(2)}`)
                     ]),
-                    React.createElement('div', {
+                    createElement('div', {
                         key: 'total',
                         className: "border-t pt-3"
-                    }, React.createElement('div', {
+                    }, createElement('div', {
                         className: "flex justify-between font-semibold text-lg"
                     }, [
-                        React.createElement('span', { key: 'total-label' }, 'Total'),
-                        React.createElement('span', { key: 'total-value' }, `$${total.toFixed(2)}`)
+                        createElement('span', { key: 'total-label' }, 'Total'),
+                        createElement('span', { key: 'total-value' }, `$${total.toFixed(2)}`)
                     ]))
                 ]),
 
-                React.createElement('div', {
+                createElement('div', {
                     key: 'action-buttons',
                     className: "space-y-3"
                 }, [
-                    React.createElement('button', {
+                    createElement('button', {
                         key: 'place-order-btn',
                         type: "submit",
                         disabled: processing,
@@ -400,7 +403,7 @@ const CheckoutForm = ({ onSubmit, onCancel }) => {
                                 : 'bg-green-600 text-white hover:bg-green-700'
                         }`
                     }, processing ? 'Processing...' : `Place Order - $${total.toFixed(2)}`),
-                    React.createElement('button', {
+                    createElement('button', {
                         key: 'cancel-btn',
                         type: "button",
                         onClick: onCancel,
@@ -416,3 +419,5 @@ const CheckoutForm = ({ onSubmit, onCancel }) => {
         ])
     ]);
 };
+
+export default CheckoutForm;
