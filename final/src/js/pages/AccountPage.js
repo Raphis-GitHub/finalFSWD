@@ -2,7 +2,7 @@
 
 const AccountPage = () => {
     const { currentUser, updateProfile } = useAuth();
-    const { orders } = useCart();
+    const { orders, wishlist, toggleWishlist } = useCart();
     const [activeTab, setActiveTab] = React.useState('profile');
     const [editMode, setEditMode] = React.useState(false);
     const [profileData, setProfileData] = React.useState({
@@ -372,6 +372,70 @@ const AccountPage = () => {
                         }, React.createElement('p', {
                             className: "font-semibold text-lg"
                         }, `Total: $${order.total.toFixed(2)}`))
+                    ])))
+                ]),
+
+                // Wishlist Tab
+                activeTab === 'wishlist' && React.createElement('div', {
+                    key: 'wishlist-content'
+                }, [
+                    React.createElement('h2', {
+                        key: 'wishlist-title',
+                        className: "text-xl font-semibold text-gray-900 mb-6"
+                    }, 'My Wishlist'),
+                    
+                    wishlist.length === 0 ? React.createElement('div', {
+                        key: 'no-wishlist',
+                        className: "text-center py-8"
+                    }, [
+                        React.createElement('p', {
+                            key: 'no-wishlist-text',
+                            className: "text-gray-600 text-lg"
+                        }, 'Your wishlist is empty.'),
+                        React.createElement('button', {
+                            key: 'browse-products-btn',
+                            onClick: () => window.location.hash = '#products',
+                            className: "mt-4 bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition-colors"
+                        }, 'Browse Products')
+                    ]) : React.createElement('div', {
+                        key: 'wishlist-grid',
+                        className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                    }, wishlist.map(product => React.createElement('div', {
+                        key: product.id,
+                        className: "bg-white border rounded-lg p-4 shadow-sm"
+                    }, [
+                        React.createElement(LazyImage, {
+                            key: 'product-image',
+                            src: product.image,
+                            alt: product.name,
+                            className: "w-full h-40 object-cover rounded-md mb-3"
+                        }),
+                        React.createElement('h3', {
+                            key: 'product-name',
+                            className: "font-semibold text-gray-900 mb-2"
+                        }, product.name),
+                        React.createElement('p', {
+                            key: 'product-price',
+                            className: "text-lg font-bold text-blue-600 mb-3"
+                        }, `$${product.price.toFixed(2)}`),
+                        React.createElement('div', {
+                            key: 'product-actions',
+                            className: "flex space-x-2"
+                        }, [
+                            React.createElement('button', {
+                                key: 'remove-btn',
+                                onClick: () => toggleWishlist(product),
+                                className: "flex-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+                            }, 'Remove'),
+                            React.createElement('button', {
+                                key: 'view-btn',
+                                onClick: () => {
+                                    // Will implement product page navigation later
+                                    console.log('View product:', product.id);
+                                },
+                                className: "flex-1 bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors"
+                            }, 'View')
+                        ])
                     ])))
                 ]),
 

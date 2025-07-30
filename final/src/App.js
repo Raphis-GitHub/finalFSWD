@@ -1,228 +1,123 @@
-// js/App.js
+/**
+ * Main Application Component
+ * Sets up routing and main application layout
+ */
 
-const ECommerceApp = () => {
-    const { useState, useEffect } = React;
-    
-    const [currentUser, setCurrentUser] = useState(null);
-    const [currentPage, setCurrentPage] = useState('home');
-    const [products, setProducts] = useState(mockProducts);
-    const [users, setUsers] = useState(() => getStoredData('users', mockUsers));
-    const [orders, setOrders] = useState(() => getStoredData('orders', mockOrders));
-    const [cart, setCart] = useState(() => getStoredData('cart', []));
-    const [wishlist, setWishlist] = useState(() => getStoredData('wishlist', []));
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('all');
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+import React, { useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
+import { useCart } from './contexts/CartContext';
 
-    useEffect(() => {
-        const handleResize = () => setIsMobile(window.innerWidth < 768);
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
+// Import components (we'll create these)
+import Layout from './components/Layout';
+import HomePage from './pages/HomePage';
+import ProductsPage from './pages/ProductsPage';
+import ProductPage from './pages/ProductPage';
+import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import AccountPage from './pages/AccountPage';
+import AdminDashboard from './pages/AdminDashboard';
+import NotFoundPage from './pages/NotFoundPage';
 
-    useEffect(() => { setStoredData('cart', cart); }, [cart]);
-    useEffect(() => { setStoredData('orders', orders); }, [orders]);
-    useEffect(() => { setStoredData('wishlist', wishlist); }, [wishlist]);
+// Protected Route component
+const ProtectedRoute = ({ children, requireAdmin = false }) => {
+  const { isAuthenticated, user, isLoading } = useAuth();
 
-    const login = (email, password) => {
-        const user = users.find(u => u.email === email && u.password === password);
-        if (user) {
-            setCurrentUser(user);
-            return { success: true };
-        }
-        return { success: false, error: 'Invalid credentials' };
-    };
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="loading-spinner w-8 h-8"></div>
+      </div>
+    );
+  }
 
-    const register = (userData) => {
-        const existingUser = users.find(u => u.email === userData.email);
-        if (existingUser) {
-            return { success: false, error: 'Email already exists' };
-        }
-        const newUser = { ...userData, id: Date.now(), role: 'customer' };
-        const updatedUsers = [...users, newUser];
-        setUsers(updatedUsers);
-        setStoredData('users', updatedUsers);
-        setCurrentUser(newUser);
-        return { success: true };
-    };
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
-    const logout = () => {
-        setCurrentUser(null);
-        setCurrentPage('home');
-    };
+  if (requireAdmin && user?.role !== 'admin') {
+    return <Navigate to="/" replace />;
+  }
 
-    const addToCart = (product, quantity = 1) => {
-        if (!currentUser) {
-            setCurrentPage('login');
-            return;
-        }
-        
-        setCart(prev => {
-            const existing = prev.find(item => item.id === product.id);
-            if (existing) {
-                return prev.map(item => 
-                    item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
-                );
-            }
-            return [...prev, { ...product, quantity }];
-        });
-    };
-
-    const updateCartQuantity = (productId, quantity) => {
-        if (quantity <= 0) {
-            removeFromCart(productId);
-            return;
-        }
-        setCart(prev => prev.map(item => 
-            item.id === productId ? { ...item, quantity } : item
-        ));
-    };
-
-    const removeFromCart = (productId) => {
-        setCart(prev => prev.filter(item => item.id !== productId));
-    };
-
-    const toggleWishlist = (product) => {
-        if (!currentUser) {
-            setCurrentPage('login');
-            return;
-        }
-        
-        setWishlist(prev => {
-            const exists = prev.find(item => item.id === product.id);
-            if (exists) {
-                return prev.filter(item => item.id !== product.id);
-            }
-            return [...prev, product];
-        });
-    };
-
-    const placeOrder = (orderData) => {
-        if (!currentUser || cart.length === 0) return;
-        
-        const newOrder = {
-            id: Date.now(),
-            userId: currentUser.id,
-            items: cart.map(item => ({ 
-                productId: item.id, 
-                name: item.name, 
-                quantity: item.quantity, 
-                price: item.price 
-            })),
-            total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
-            status: 'processing',
-            date: new Date().toISOString().split('T')[0],
-            shippingAddress: orderData.address || currentUser.address
-        };
-        
-        setOrders(prev => [...prev, newOrder]);
-        setCart([]);
-        setCurrentPage('orders');
-    };
-
-    const updateOrderStatus = (orderId, status) => {
-        setOrders(prev => prev.map(order => 
-            order.id === orderId ? { ...order, status } : order
-        ));
-    };
-
-    const addProduct = (productData) => {
-        const newProduct = { ...productData, id: Date.now() };
-        setProducts(prev => [...prev, newProduct]);
-    };
-
-    const updateProduct = (productId, productData) => {
-        setProducts(prev => prev.map(product => 
-            product.id === productId ? { ...product, ...productData } : product
-        ));
-    };
-
-    const deleteProduct = (productId) => {
-        setProducts(prev => prev.filter(product => product.id !== productId));
-    };
-
-    const filteredProducts = products.filter(product => {
-        const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                             product.category.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
-        return matchesSearch && matchesCategory;
-    });
-
-    const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-    const authContextValue = { currentUser, login, register, logout };
-    const cartContextValue = { 
-        cart, addToCart, updateCartQuantity, removeFromCart, cartTotal, cartItemCount,
-        wishlist, toggleWishlist, placeOrder
-    };
-
-    return React.createElement(AuthProvider, {
-        value: authContextValue
-    }, React.createElement(CartProvider, {
-        value: cartContextValue
-    }, React.createElement('div', {
-        className: "min-h-screen bg-gray-50"
-    }, [
-        React.createElement(Navigation, {
-            key: 'navigation',
-            currentPage,
-            setCurrentPage,
-            searchQuery,
-            setSearchQuery,
-            isMobile
-        }),
-        
-        React.createElement('main', {
-            key: 'main',
-            className: "pt-16"
-        }, [
-            currentPage === 'home' && React.createElement(HomePage, {
-                key: 'home',
-                products: filteredProducts,
-                selectedCategory,
-                setSelectedCategory,
-                setCurrentPage
-            }),
-            currentPage === 'products' && React.createElement(ProductsPage, {
-                key: 'products',
-                products: filteredProducts,
-                selectedCategory,
-                setSelectedCategory
-            }),
-            currentPage === 'cart' && React.createElement(CartPage, {
-                key: 'cart'
-            }),
-            currentPage === 'wishlist' && React.createElement(WishlistPage, {
-                key: 'wishlist'
-            }),
-            currentPage === 'orders' && React.createElement(OrdersPage, {
-                key: 'orders'
-            }),
-            currentPage === 'profile' && React.createElement(ProfilePage, {
-                key: 'profile'
-            }),
-            currentPage === 'register' && React.createElement(RegisterPage, {
-                key: 'register',
-                setCurrentPage
-            }),
-            currentPage === 'login' && React.createElement(LoginPage, {
-                key: 'login',
-                setCurrentPage
-            }),
-            currentPage === 'admin' && currentUser?.role === 'admin' && React.createElement(AdminDashboard, {
-                key: 'admin',
-                products,
-                orders,
-                users,
-                addProduct,
-                updateProduct,
-                deleteProduct,
-                updateOrderStatus
-            })
-        ])
-    ])));
+  return children;
 };
 
-// Render the app
-ReactDOM.render(React.createElement(ECommerceApp), document.getElementById('root'));
+function App() {
+  const { loadUser, isAuthenticated } = useAuth();
+  const { loadProducts, loadCategories } = useCart();
+
+  // Load initial data
+  useEffect(() => {
+    // Load user if token exists
+    if (localStorage.getItem('token')) {
+      loadUser();
+    }
+
+    // Load products and categories
+    loadProducts();
+    loadCategories();
+  }, []);
+
+  return (
+    <div className="App">
+      <Routes>
+        {/* Public routes */}
+        <Route path="/" element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="products" element={<ProductsPage />} />
+          <Route path="products/:id" element={<ProductPage />} />
+          <Route path="cart" element={<CartPage />} />
+          
+          {/* Auth routes - redirect if already logged in */}
+          <Route 
+            path="login" 
+            element={
+              isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />
+            } 
+          />
+          <Route 
+            path="register" 
+            element={
+              isAuthenticated ? <Navigate to="/" replace /> : <RegisterPage />
+            } 
+          />
+          
+          {/* Protected routes */}
+          <Route 
+            path="checkout" 
+            element={
+              <ProtectedRoute>
+                <CheckoutPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="account/*" 
+            element={
+              <ProtectedRoute>
+                <AccountPage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Admin routes */}
+          <Route 
+            path="admin/*" 
+            element={
+              <ProtectedRoute requireAdmin>
+                <AdminDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* 404 page */}
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
+      </Routes>
+    </div>
+  );
+}
+
+export default App;

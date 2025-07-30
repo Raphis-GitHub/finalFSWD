@@ -3,16 +3,27 @@
 const ECommerceApp = () => {
     const { useState, useEffect } = React;
     
-    const [currentUser, setCurrentUser] = useState(null);
+    const [currentUser, setCurrentUser] = useState(() => getStoredData('currentUser', null));
     const [currentPage, setCurrentPage] = useState('home');
-    const [products, setProducts] = useState(mockProducts);
+    const [products, setProducts] = useState(() => {
+        const storedProducts = getStoredData('products', []);
+        return storedProducts.length > 0 ? storedProducts : mockProducts;
+    });
+
+    // Save products to localStorage when they change
+    useEffect(() => {
+        setStoredData('products', products);
+    }, [products]);
     const [users, setUsers] = useState(() => getStoredData('users', mockUsers));
     const [orders, setOrders] = useState(() => getStoredData('orders', mockOrders));
     const [cart, setCart] = useState(() => getStoredData('cart', []));
-    const [wishlist, setWishlist] = useState(() => getStoredData('wishlist', []));
+    const [wishlist, setWishlist] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    const [currentProductId, setCurrentProductId] = useState(null);
+    const [currentProductPage, setCurrentProductPage] = useState(1);
+    const [productsPerPage] = useState(12);
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -20,14 +31,25 @@ const ECommerceApp = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    // Load user-specific wishlist when user changes
+    useEffect(() => {
+        if (currentUser) {
+            const userWishlistKey = `wishlist_${currentUser.id}`;
+            const userWishlist = getStoredData(userWishlistKey, []);
+            setWishlist(userWishlist);
+        } else {
+            setWishlist([]);
+        }
+    }, [currentUser]);
+
     useEffect(() => { setStoredData('cart', cart); }, [cart]);
     useEffect(() => { setStoredData('orders', orders); }, [orders]);
-    useEffect(() => { setStoredData('wishlist', wishlist); }, [wishlist]);
 
     const login = (email, password) => {
         const user = users.find(u => u.email === email && u.password === password);
         if (user) {
             setCurrentUser(user);
+            setStoredData('currentUser', user);
             return { success: true };
         }
         return { success: false, error: 'Invalid credentials' };
@@ -48,12 +70,14 @@ const ECommerceApp = () => {
         setUsers(updatedUsers);
         setStoredData('users', updatedUsers);
         setCurrentUser(newUser);
+        setStoredData('currentUser', newUser);
         return { success: true };
     };
 
     const updateProfile = (profileData) => {
         const updatedUser = { ...currentUser, ...profileData };
         setCurrentUser(updatedUser);
+        setStoredData('currentUser', updatedUser);
         const updatedUsers = users.map(u => u.id === currentUser.id ? updatedUser : u);
         setUsers(updatedUsers);
         setStoredData('users', updatedUsers);
@@ -61,6 +85,7 @@ const ECommerceApp = () => {
 
     const logout = () => {
         setCurrentUser(null);
+        setStoredData('currentUser', null);
         setCurrentPage('home');
         setCart([]);
         setWishlist([]);
@@ -152,13 +177,24 @@ const ECommerceApp = () => {
         return matchesSearch && matchesCategory;
     });
 
+    // Pagination logic
+    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+    const startIndex = (currentProductPage - 1) * productsPerPage;
+    const paginatedProducts = filteredProducts.slice(startIndex, startIndex + productsPerPage);
+
+    const goToProductPage = (productId) => {
+        setCurrentProductId(productId);
+        setCurrentPage('product');
+    };
+
     const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
     const authContextValue = { currentUser, login, register, logout, updateProfile };
     const cartContextValue = { 
         cart, addToCart, updateCartQuantity, removeFromCart, cartTotal, cartItemCount,
-        wishlist, toggleWishlist, placeOrder, orders, users, products, setProducts, setOrders
+        wishlist, toggleWishlist, placeOrder, orders, users, products, setProducts, setOrders,
+        goToProductPage, currentProductPage, setCurrentProductPage, totalPages, paginatedProducts
     };
 
     return React.createElement(AuthProvider, {
@@ -190,9 +226,18 @@ const ECommerceApp = () => {
             }),
             currentPage === 'products' && React.createElement(ProductsPage, {
                 key: 'products',
-                products: filteredProducts,
+                products: paginatedProducts,
                 selectedCategory,
-                setSelectedCategory
+                setSelectedCategory,
+                allProducts: products,
+                currentPage: currentProductPage,
+                setCurrentPage: setCurrentProductPage,
+                totalPages
+            }),
+            currentPage === 'product' && React.createElement(ProductPage, {
+                key: 'product',
+                productId: currentProductId,
+                setCurrentPage
             }),
             currentPage === 'cart' && React.createElement(CartPage, {
                 key: 'cart'
