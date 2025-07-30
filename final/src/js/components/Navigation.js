@@ -80,11 +80,20 @@ const Navigation = ({ currentPage, setCurrentPage, searchQuery, setSearchQuery, 
                     ]),
                     React.createElement('button', {
                         key: 'profile-btn',
-                        onClick: () => setCurrentPage('profile'),
+                        onClick: () => setCurrentPage('account'),
                         className: `p-2 rounded-md transition-colors ${
-                            currentPage === 'profile' ? 'text-blue-600 bg-blue-50' : 'text-gray-700 hover:text-blue-600'
-                        }`
+                            currentPage === 'account' ? 'text-blue-600 bg-blue-50' : 'text-gray-700 hover:text-blue-600'
+                        }`,
+                        title: "My Account"
                     }, React.createElement(UserIcon)),
+                    currentUser.role === 'admin' && React.createElement('button', {
+                        key: 'admin-btn',
+                        onClick: () => setCurrentPage('admin'),
+                        className: `p-2 rounded-md transition-colors ${
+                            currentPage === 'admin' ? 'text-blue-600 bg-blue-50' : 'text-gray-700 hover:text-blue-600'
+                        }`,
+                        title: "Admin Dashboard"
+                    }, '⚙️'),
                     React.createElement('button', {
                         key: 'logout-btn',
                         onClick: logout,

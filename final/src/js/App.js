@@ -33,9 +33,37 @@ const ECommerceApp = () => {
         return { success: false, error: 'Invalid credentials' };
     };
 
+    const register = (userData) => {
+        const existingUser = users.find(u => u.email === userData.email);
+        if (existingUser) {
+            return { success: false, error: 'Email already exists' };
+        }
+        const newUser = { 
+            ...userData, 
+            id: Date.now(), 
+            role: 'customer',
+            wishlist: [] // User-specific wishlist
+        };
+        const updatedUsers = [...users, newUser];
+        setUsers(updatedUsers);
+        setStoredData('users', updatedUsers);
+        setCurrentUser(newUser);
+        return { success: true };
+    };
+
+    const updateProfile = (profileData) => {
+        const updatedUser = { ...currentUser, ...profileData };
+        setCurrentUser(updatedUser);
+        const updatedUsers = users.map(u => u.id === currentUser.id ? updatedUser : u);
+        setUsers(updatedUsers);
+        setStoredData('users', updatedUsers);
+    };
+
     const logout = () => {
         setCurrentUser(null);
         setCurrentPage('home');
+        setCart([]);
+        setWishlist([]);
     };
 
     const addToCart = (product, quantity = 1) => {
@@ -75,13 +103,46 @@ const ECommerceApp = () => {
             return;
         }
         
-        setWishlist(prev => {
-            const exists = prev.find(item => item.id === product.id);
-            if (exists) {
-                return prev.filter(item => item.id !== product.id);
-            }
-            return [...prev, product];
-        });
+        // Update user-specific wishlist
+        const userWishlistKey = `wishlist_${currentUser.id}`;
+        const userWishlist = getStoredData(userWishlistKey, []);
+        
+        const exists = userWishlist.find(item => item.id === product.id);
+        let updatedWishlist;
+        
+        if (exists) {
+            updatedWishlist = userWishlist.filter(item => item.id !== product.id);
+        } else {
+            updatedWishlist = [...userWishlist, product];
+        }
+        
+        setWishlist(updatedWishlist);
+        setStoredData(userWishlistKey, updatedWishlist);
+    };
+
+    const placeOrder = (orderData) => {
+        if (!currentUser || cart.length === 0) return;
+        
+        const newOrder = {
+            id: Date.now(),
+            userId: currentUser.id,
+            items: cart.map(item => ({ 
+                productId: item.id, 
+                name: item.name, 
+                quantity: item.quantity, 
+                price: item.price 
+            })),
+            total: orderData.total || cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+            status: 'processing',
+            date: new Date().toISOString().split('T')[0],
+            shippingAddress: orderData.shippingAddress || currentUser.address,
+            paymentMethod: orderData.paymentMethod || 'Credit Card',
+            orderNotes: orderData.orderNotes || ''
+        };
+        
+        setOrders(prev => [...prev, newOrder]);
+        setCart([]);
+        setCurrentPage('account'); // Redirect to account page to see order
     };
 
     const filteredProducts = products.filter(product => {
@@ -94,10 +155,10 @@ const ECommerceApp = () => {
     const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-    const authContextValue = { currentUser, login, logout };
+    const authContextValue = { currentUser, login, register, logout, updateProfile };
     const cartContextValue = { 
         cart, addToCart, updateCartQuantity, removeFromCart, cartTotal, cartItemCount,
-        wishlist, toggleWishlist
+        wishlist, toggleWishlist, placeOrder, orders, users, products, setProducts, setOrders
     };
 
     return React.createElement(AuthProvider, {
@@ -139,6 +200,16 @@ const ECommerceApp = () => {
             currentPage === 'login' && React.createElement(LoginPage, {
                 key: 'login',
                 setCurrentPage
+            }),
+            currentPage === 'register' && React.createElement(RegisterPage, {
+                key: 'register',
+                setCurrentPage
+            }),
+            currentPage === 'account' && React.createElement(AccountPage, {
+                key: 'account'
+            }),
+            currentPage === 'admin' && React.createElement(AdminDashboard, {
+                key: 'admin'
             })
         ])
     ])));

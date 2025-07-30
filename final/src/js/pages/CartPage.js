@@ -1,8 +1,9 @@
 // js/pages/CartPage.js
 
 const CartPage = () => {
-    const { cart, updateCartQuantity, removeFromCart, cartTotal } = useCart();
+    const { cart, updateCartQuantity, removeFromCart, cartTotal, placeOrder } = useCart();
     const { currentUser } = useAuth();
+    const [showCheckout, setShowCheckout] = React.useState(false);
 
     if (!currentUser) {
         return React.createElement('div', {
@@ -161,10 +162,15 @@ const CartPage = () => {
                     ]))
                 ]),
 
-                React.createElement('button', {
+                !showCheckout ? React.createElement('button', {
                     key: 'checkout-btn',
+                    onClick: () => setShowCheckout(true),
                     className: "w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition-colors"
-                }, 'Proceed to Checkout')
+                }, 'Proceed to Checkout') : React.createElement(CheckoutForm, {
+                    key: 'checkout-form',
+                    onSubmit: placeOrder,
+                    onCancel: () => setShowCheckout(false)
+                })
             ]))
         ])
     ]);

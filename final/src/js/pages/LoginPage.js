@@ -90,6 +90,20 @@ const LoginPage = ({ setCurrentPage }) => {
                 type: "submit",
                 className: "w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition-colors"
             }, 'Login')
-        ])
+        ]),
+
+        React.createElement('div', {
+            key: 'register-link',
+            className: "mt-6 text-center"
+        }, React.createElement('p', {
+            className: "text-gray-600"
+        }, [
+            "Don't have an account? ",
+            React.createElement('button', {
+                key: 'register-btn',
+                onClick: () => setCurrentPage('register'),
+                className: "text-blue-600 hover:text-blue-800 font-medium"
+            }, 'Sign up')
+        ]))
     ]));
 };
