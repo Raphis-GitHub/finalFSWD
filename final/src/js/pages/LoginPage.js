@@ -7,13 +7,18 @@ const LoginPage = ({ setCurrentPage }) => {
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const result = login(formData.email, formData.password);
-        if (result.success) {
-            setCurrentPage('home');
-        } else {
-            setError(result.error);
+        setError('');
+        try {
+            const result = await login(formData.email, formData.password);
+            if (result.success) {
+                setCurrentPage('home');
+            } else {
+                setError(result.error);
+            }
+        } catch (error) {
+            setError('Login failed. Please try again.');
         }
     };
 

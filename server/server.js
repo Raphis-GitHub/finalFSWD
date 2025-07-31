@@ -25,9 +25,9 @@ const io = new Server(server, {
 
 const PORT = process.env.PORT || 5000;
 
-// Connect to databases
-connectMongoDB();
-connectMySQL();
+// Connect to databases - commented out for JSON file storage
+// connectMongoDB();
+// connectMySQL();
 
 // Rate limiting
 const limiter = rateLimit({
@@ -56,14 +56,12 @@ app.use('/uploads', express.static('uploads'));
 socketHandler(io);
 app.set('io', io);
 
-// Routes
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/users', require('./routes/userRoutes'));
-app.use('/api/products', require('./routes/productRoutes'));
-app.use('/api/orders', require('./routes/orderRoutes'));
+// Routes - using simple JSON-based routes for now
+app.use('/api/auth', require('./routes/authRoutesSimple'));
+app.use('/api/products', require('./routes/productRoutesSimple'));
+// Keep other routes as they are for now
 app.use('/api/upload', require('./routes/uploadRoutes'));
 app.use('/api/payments', require('./routes/paymentRoutes'));
-app.use('/api/analytics', require('./routes/analyticsRoutes'));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

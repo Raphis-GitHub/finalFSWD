@@ -11,6 +11,7 @@ import RegisterPage from './pages/RegisterPage';
 import AccountPage from './pages/AccountPage';
 import AdminDashboard from './pages/AdminDashboard';
 import { mockProducts, mockUsers, mockOrders, getStoredData, setStoredData } from './data/mockData';
+import apiService from './services/api';
 
 const ECommerceApp = () => {
     
@@ -20,6 +21,24 @@ const ECommerceApp = () => {
         const storedProducts = getStoredData('products', []);
         return Array.isArray(storedProducts) && storedProducts.length > 0 ? storedProducts : mockProducts;
     });
+
+    // Load products from API on app start
+    useEffect(() => {
+        const loadProducts = async () => {
+            try {
+                const response = await apiService.getProducts();
+                if (response.success) {
+                    setProducts(response.data.products);
+                }
+            } catch (error) {
+                console.error('Failed to load products:', error);
+                // Fallback to mock data
+                setProducts(mockProducts);
+            }
+        };
+        
+        loadProducts();
+    }, []);
 
     // Save products to localStorage when they change
     useEffect(() => {
@@ -65,14 +84,19 @@ const ECommerceApp = () => {
     useEffect(() => { setStoredData('cart', cart); }, [cart]);
     useEffect(() => { setStoredData('orders', orders); }, [orders]);
 
-    const login = (email, password) => {
-        const user = users.find(u => u.email === email && u.password === password);
-        if (user) {
-            setCurrentUser(user);
-            setStoredData('currentUser', user);
-            return { success: true };
+    const login = async (email, password) => {
+        try {
+            const response = await apiService.login(email, password);
+            if (response.success) {
+                setCurrentUser(response.data.user);
+                setStoredData('currentUser', response.data.user);
+                return { success: true };
+            }
+            return { success: false, error: response.message || 'Invalid credentials' };
+        } catch (error) {
+            console.error('Login error:', error);
+            return { success: false, error: 'Login failed. Please try again.' };
         }
-        return { success: false, error: 'Invalid credentials' };
     };
 
     const register = (userData) => {

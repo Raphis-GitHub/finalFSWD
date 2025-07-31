@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "John Customer",
+    "email": "customer@demo.com",
+    "password": "$2a$10$2cRXklw4LE2aBc7gUFKCee0qlT1JRkUsfcK5ubCuXFDFA7H028sIy",
+    "role": "customer",
+    "phone": "+1-555-0123",
+    "address": "123 Main St",
+    "isEmailVerified": true,
+    "createdAt": "2025-01-31T00:00:00.000Z",
+    "updatedAt": "2025-01-31T00:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "name": "Jane Admin", 
+    "email": "admin@demo.com",
+    "password": "$2a$10$c5fIUJhCSlFhz9szfTV32.UjwoqtmWi1G1X7rEGd1sOKe2pce.ndi",
+    "role": "admin",
+    "phone": "+1-555-0456",
+    "address": "456 Admin Ave",
+    "isEmailVerified": true,
+    "createdAt": "2025-01-31T00:00:00.000Z",
+    "updatedAt": "2025-01-31T00:00:00.000Z"
+  }
+]
